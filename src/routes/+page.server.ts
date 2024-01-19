@@ -1,6 +1,7 @@
 import db from "$lib/database";
 import type { Prisma } from "@prisma/client";
 import type { Actions, PageServerLoad } from "./$types";
+import { run } from "$lib/speedtest";
 
 export const load: PageServerLoad = async () => {
   const query: Prisma.SpeedtestFindManyArgs = {
@@ -52,5 +53,8 @@ export const actions: Actions = {
         id: Number(body.get("id")!),
       },
     });
+  },
+  run: async () => {
+    run();
   },
 };

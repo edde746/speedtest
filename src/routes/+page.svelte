@@ -211,6 +211,18 @@
   {/if}
 
   <div class="flex col-span-full gap-2 ml-2">
+    <form
+      action="?/run"
+      method="post"
+      use:enhance={() =>
+        ({ result }) => {
+          if (result.type == "success") {
+            toasts.add({ text: "Speedtest started", type: "success" });
+          }
+        }}
+    >
+      <button class="link">Run Test</button>
+    </form>
     <a class="link" href="/settings">Settings</a>
     <a class="link" href="https://github.com/edde746/speedtest" target="_blank">
       GitHub
