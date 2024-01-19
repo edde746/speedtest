@@ -7,14 +7,14 @@
   } from "@steeze-ui/lucide-icons";
   import { Icon } from "@steeze-ui/svelte-icon";
 
-  const { title, value, icon, trend } = $props<{
+  const { title, value, icon, trend, color } = $props<{
     title: string;
     value: string;
     icon: IconSource;
     trend: number;
+    color: string;
   }>();
 
-  type Trend = "up" | "neutral" | "down";
   const getTrend = (trend: number) => {
     if (trend > 5) return { class: "text-success", icon: TrendingUp };
     if (trend < -5) return { class: "text-error", icon: TrendingDown };
@@ -35,5 +35,5 @@
       <span class="text-xs">{trend}%</span>
     </div>
   </div>
-  <Icon src={icon} class="{trendStyle.class} w-10 h-10" />
+  <Icon src={icon} class="w-10 h-10" style="color:{color}" />
 </div>
