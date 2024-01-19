@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Download, Timer, Upload } from "@steeze-ui/lucide-icons";
+  import { Download, Timer, Upload, Server } from "@steeze-ui/lucide-icons";
   import Stat from "./Stat.svelte";
   import {
     VisAxis,
@@ -9,6 +9,7 @@
     VisTooltip,
     VisXYContainer,
   } from "@unovis/svelte";
+  import { Icon } from "@steeze-ui/svelte-icon";
 
   const colors = ["#4D8CFD", "#FF6B7D", "#FFC06D"];
 
@@ -68,5 +69,45 @@
       <VisLine lineWidth={3} {x} y={(d) => d.upload} color={colors[1]} />
       <VisScatter {x} y={(d) => d.ping} shape="triangle" color={colors[2]} />
     </VisXYContainer>
+  </div>
+
+  <div class="col-span-6 rounded-box bg-base-200 overflow-y-auto">
+    <table class="table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Time</th>
+          <th>Ping</th>
+          <th>Download</th>
+          <th>Upload</th>
+          <th>Server</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each Array.from({ length: 10 }, (_, i) => i + 1) as i}
+          <tr>
+            <th>{i}</th>
+            <td>{new Date().toLocaleString()}</td>
+            <td>12.2 ms</td>
+            <td>533.2 mbps</td>
+            <td>25.6 mpbs</td>
+            <td>
+              <button class="btn btn-primary btn-sm">
+                <Icon src={Server} class="w-4 h-4" />
+                <span>Bahnhof AB</span>
+              </button>
+            </td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="flex col-span-full gap-2 ml-2">
+    <a class="link" href="/settings">Settings</a>
+    <a class="link" href="https://github.com/edde746/speedtest" target="_blank">
+      GitHub
+    </a>
   </div>
 </div>
