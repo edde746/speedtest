@@ -27,7 +27,7 @@
 </script>
 
 <div
-  class="rounded-box bg-base-200 p-4 col-span-2 flex justify-between items-center"
+  class="rounded-box bg-base-200 p-4 col-span-full md:col-span-2 flex justify-between items-center"
 >
   <div>
     <span class="opacity-80">{title}</span>

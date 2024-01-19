@@ -162,7 +162,7 @@
                 <td>{speedtest.upload?.toFixed(2)} mpbs</td>
                 <td>
                   <button
-                    class="btn btn-primary btn-sm"
+                    class="btn btn-primary btn-sm flex-nowrap"
                     onclick={() => {
                       selectedServer = speedtest.server;
                     }}
@@ -176,8 +176,9 @@
                   <td><Icon src={X} class="w-4 h-4 text-error" /></td>
                 {/each}
               {/if}
-              <td class="flex justify-end items-center">
+              <td>
                 <form
+                  class="flex justify-end items-center"
                   action="?/delete"
                   method="POST"
                   use:enhance={() =>
@@ -194,7 +195,7 @@
                     }}
                 >
                   <button
-                    class="btn btn-error btn-sm"
+                    class="btn btn-error btn-sm flex-nowrap"
                     name="id"
                     value={speedtest.id}
                   >
