@@ -1,5 +1,12 @@
 <script lang="ts">
-  import { Download, Timer, Upload, Server } from "@steeze-ui/lucide-icons";
+  import {
+    Download,
+    Timer,
+    Upload,
+    Server,
+    X,
+    Trash2,
+  } from "@steeze-ui/lucide-icons";
   import Stat from "./Stat.svelte";
   import {
     VisAxis,
@@ -10,45 +17,52 @@
     VisXYContainer,
   } from "@unovis/svelte";
   import { Icon } from "@steeze-ui/svelte-icon";
+  const { data } = $props();
 
   const colors = ["#4D8CFD", "#FF6B7D", "#FFC06D"];
 
-  let data = Array.from({ length: 24 }, (_, i) => ({
-    time: Date.now() + i * 60 * 60 * 1000,
-    download: Math.floor(Math.random() * 10000) / 10,
-    upload: Math.floor(Math.random() * 5000) / 10,
-    ping: Math.floor(Math.random() * 1000) / 10,
-    shape: Math.random() > 0.5 ? "circle" : "square",
-  }));
-  type Entry = (typeof data)[0];
-  const x = (d: Entry) => d.time;
+  const previous = $derived(data.speedtests.find((d, i) => i > 0 && d.ping));
+  const getTrend = (field: "upload" | "download" | "ping") => {
+    if (!previous) return 0;
+    const current = data.speedtests[0][field];
+    if (!current) return 0;
+    return ((current - previous[field]!) / previous[field]!) * 100;
+  };
+
+  const successful = $derived(data.speedtests.filter((d) => d.ping));
+
+  type Entry = (typeof data.speedtests)[0];
+  const x = (d: Entry) => d.time.getTime();
 </script>
 
 <div class="p-4 grid grid-cols-6 gap-4">
   <Stat
     title="Ping"
-    value="13 ms"
+    value={data.speedtests[0].ping}
+    suffix="ms"
     icon={Timer}
-    trend={-5.3}
+    trend={getTrend("ping")}
     color={colors[0]}
   />
   <Stat
     title="Download"
-    value="502.2 mbps"
+    value={data.speedtests[0].download}
+    suffix="mbps"
     icon={Download}
-    trend={3.2}
+    trend={getTrend("download")}
     color={colors[1]}
   />
   <Stat
     title="Upload"
-    value="47.1 mbps"
+    value={data.speedtests[0].upload}
+    suffix="mbps"
     icon={Upload}
-    trend={7.5}
+    trend={getTrend("upload")}
     color={colors[2]}
   />
 
   <div class="col-span-6 rounded-box bg-base-200 w-full">
-    <VisXYContainer {data} padding={{ top: 12 }}>
+    <VisXYContainer data={successful.reverse()} padding={{ top: 12 }}>
       <VisAxis
         type="x"
         tickFormat={(d) =>
@@ -61,7 +75,11 @@
       <VisCrosshair
         color={(_, i) => colors[i]}
         template={(d) =>
-          `<b>Download:</b> ${d.download} mbps<br/><b>Upload:</b> ${d.upload} mbps<br/><b>Ping:</b> ${d.ping} ms`}
+          `<b>${d.time.toLocaleString()}</b><br/><b>Download:</b> ${
+            d.download
+          } mbps<br/><b>Upload:</b> ${d.upload} mbps<br/><b>Ping:</b> ${
+            d.ping
+          } ms`}
       />
       <VisTooltip />
 
@@ -75,7 +93,6 @@
     <table class="table">
       <thead>
         <tr>
-          <th></th>
           <th>Time</th>
           <th>Ping</th>
           <th>Download</th>
@@ -85,19 +102,33 @@
         </tr>
       </thead>
       <tbody>
-        {#each Array.from({ length: 10 }, (_, i) => i + 1) as i}
+        {#each data.speedtests as speedtest}
           <tr>
-            <th>{i}</th>
-            <td>{new Date().toLocaleString()}</td>
-            <td>12.2 ms</td>
-            <td>533.2 mbps</td>
-            <td>25.6 mpbs</td>
-            <td>
-              <button class="btn btn-primary btn-sm">
-                <Icon src={Server} class="w-4 h-4" />
-                <span>Bahnhof AB</span>
-              </button>
-            </td>
+            <td
+              >{speedtest.time.toLocaleString(undefined, {
+                month: "numeric",
+                day: "numeric",
+                year: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+              })}</td
+            >
+            {#if speedtest.ping}
+              <td>{speedtest.ping?.toFixed(2)} ms</td>
+              <td>{speedtest.download?.toFixed(2)} mbps</td>
+              <td>{speedtest.upload?.toFixed(2)} mpbs</td>
+              <td>
+                <button class="btn btn-primary btn-sm">
+                  <Icon src={Server} class="w-4 h-4" />
+                  <span>{speedtest.server?.name}</span>
+                </button>
+              </td>
+            {:else}
+              <td><Icon src={X} class="w-4 h-4 text-error" /></td>
+              <td><Icon src={X} class="w-4 h-4 text-error" /></td>
+              <td><Icon src={X} class="w-4 h-4 text-error" /></td>
+              <td><Icon src={X} class="w-4 h-4 text-error" /></td>
+            {/if}
           </tr>
         {/each}
       </tbody>

@@ -13,7 +13,7 @@ export const run = async () => {
 
   await db.speedtest.create({
     data: {
-      ping: result.ping.latency,
+      ping: Math.round(result.ping.latency * 100),
       download: result.download.bandwidth,
       upload: result.upload.bandwidth,
       server: {
