@@ -44,3 +44,13 @@ export const load: PageServerLoad = async () => {
   return { speedtests: speedtests.map(format) };
 };
 
+export const actions: Actions = {
+  delete: async ({ request }) => {
+    const body = await request.formData();
+    await db.speedtest.delete({
+      where: {
+        id: Number(body.get("id")!),
+      },
+    });
+  },
+};

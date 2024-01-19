@@ -8,7 +8,7 @@
   });
 </script>
 
-<div class="toast">
+<div class="toast z-50">
   {#each toasts.toasts as toast}
     <div class="alert {alertClass(toast.type)}">
       <span>{toast.text}</span>
