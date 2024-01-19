@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../data/db.sqlite"
+}
+
+model Server {
+  id         Int         @id
+  name       String
+  location   String
+  country    String
+  speedtests Speedtest[]
+}
+
+model Speedtest {
+  id   Int      @id @default(autoincrement())
+  time DateTime @default(now())
+
+  ping     Decimal
+  download Decimal
+  upload   Decimal
+
+  server   Server @relation(fields: [serverId], references: [id])
+  serverId Int
+}
+
+model Settings {
+  key  String @id
+  data String
+}
