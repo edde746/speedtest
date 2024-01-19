@@ -12,6 +12,7 @@ model Server {
   name       String
   location   String
   country    String
+  ip         String
   speedtests Speedtest[]
 }
 
@@ -19,11 +20,11 @@ model Speedtest {
   id   Int      @id @default(autoincrement())
   time DateTime @default(now())
 
-  ping     Decimal
-  download Decimal
-  upload   Decimal
+  ping     Decimal?
+  download Decimal?
+  upload   Decimal?
 
-  server   Server @relation(fields: [serverId], references: [id])
+  server   Server? @relation(fields: [serverId], references: [id])
   serverId Int
 }
 
