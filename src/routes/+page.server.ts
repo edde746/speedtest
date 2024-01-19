@@ -1,7 +1,7 @@
 import db from "$lib/database";
 import type { Prisma } from "@prisma/client";
 import type { Actions, PageServerLoad } from "./$types";
-import { run } from "$lib/speedtest";
+import { format, run } from "$lib/speedtest";
 
 export const load: PageServerLoad = async () => {
   const query: Prisma.SpeedtestFindManyArgs = {
@@ -31,16 +31,6 @@ export const load: PageServerLoad = async () => {
       },
     });
   }
-
-  const format = (entry: (typeof speedtests)[0]) =>
-    entry.ping
-      ? {
-          ...entry,
-          ping: Number((entry.ping / 100).toFixed(2)),
-          download: Number(((entry.download! * 8) / 1000000).toFixed(2)),
-          upload: Number(((entry.upload! * 8) / 1000000).toFixed(2)),
-        }
-      : entry;
 
   return { speedtests: speedtests.map(format) };
 };

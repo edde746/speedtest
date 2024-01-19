@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import db from "./database";
 
 export const run = async () => {
@@ -33,3 +34,15 @@ export const run = async () => {
     },
   });
 };
+
+export const format = (
+  entry: Prisma.PromiseReturnType<typeof db.speedtest.findMany>[0]
+) =>
+  entry.ping
+    ? {
+        ...entry,
+        ping: Number((entry.ping / 100).toFixed(2)),
+        download: Number(((entry.download! * 8) / 1000000).toFixed(2)),
+        upload: Number(((entry.upload! * 8) / 1000000).toFixed(2)),
+      }
+    : entry;
