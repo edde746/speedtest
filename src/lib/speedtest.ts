@@ -1,16 +1,34 @@
 import type { Prisma } from "@prisma/client";
+import { spawn } from "child_process";
 import db from "./database";
 
-export const run = async () => {
-  const proc = Bun.spawn([
-    "speedtest",
-    "--accept-license",
-    "--accept-gdpr",
-    "-f",
-    "json",
-  ]);
+const spawnAsync = (command: string, args: string[]): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const proc = spawn(command, args);
 
-  const result = (await new Response(proc.stdout).json()) as SpeedTestResult;
+    let output = "";
+    proc.stdout.on("data", (data) => {
+      output += data.toString();
+    });
+
+    proc.on("close", (code) => {
+      if (code === 0) {
+        resolve(output);
+      } else {
+        reject(new Error(`Process exited with code ${code}`));
+      }
+    });
+  });
+
+export const run = async () => {
+  const result = JSON.parse(
+    await spawnAsync("speedtest", [
+      "--accept-license",
+      "--accept-gdpr",
+      "-f",
+      "json",
+    ])
+  ) as SpeedTestResult;
 
   await db.speedtest.create({
     data: {
