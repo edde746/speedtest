@@ -26,35 +26,40 @@ export const run = async () => {
       'You must accept Ookla\'s EULA and GDPR policy. Please set the environment variable OOKLA_EULA_GDPR to "true" to accept the terms.'
     );
 
-  const result = JSON.parse(
-    await spawnAsync("speedtest", [
-      "--accept-license",
-      "--accept-gdpr",
-      "-f",
-      "json",
-    ])
-  ) as SpeedTestResult;
+  const result = await spawnAsync("speedtest", [
+    "--accept-license",
+    "--accept-gdpr",
+    "-f",
+    "json",
+  ])
+    .then((output) => JSON.parse(output) as SpeedTestResult)
+    .catch((err) => {
+      console.error(err);
+      return null;
+    });
 
   await db.speedtest.create({
-    data: {
-      ping: Math.round(result.ping.latency * 100),
-      download: result.download.bandwidth,
-      upload: result.upload.bandwidth,
-      server: {
-        connectOrCreate: {
-          where: {
-            id: result.server.id,
+    data: result
+      ? {
+          ping: Math.round(result.ping.latency * 100),
+          download: result.download.bandwidth,
+          upload: result.upload.bandwidth,
+          server: {
+            connectOrCreate: {
+              where: {
+                id: result.server.id,
+              },
+              create: {
+                id: result.server.id,
+                country: result.server.country,
+                location: result.server.location,
+                name: result.server.name,
+                ip: result.server.ip,
+              },
+            },
           },
-          create: {
-            id: result.server.id,
-            country: result.server.country,
-            location: result.server.location,
-            name: result.server.name,
-            ip: result.server.ip,
-          },
-        },
-      },
-    },
+        }
+      : {},
   });
 };
 
