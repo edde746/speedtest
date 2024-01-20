@@ -1,38 +1,43 @@
-# create-svelte
+# speedtest
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+Run regularly scheduled speed tests, store the results in a database and display them in a web app.
 
-## Creating a project
+## Usage
 
-If you're seeing this, you've probably already done this step. Congrats!
+To use this you must read and agree to the [Speedtest EULA](https://www.speedtest.net/about/eula) and [GDPR](https://www.speedtest.net/about/privacy) policy.
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+### Docker
 
 ```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+docker create \
+    --name=speedtest \
+    -p 3000:3000 \
+    -v ./speedtest:/app/data \
+    -e OOKLA_EULA_GDPR=true \
+    --restart unless-stopped \
+    edde746/speedtest:master
 ```
 
 ## Building
 
-To create a production version of your app:
+To build from source, run the following commands:
 
 ```bash
-npm run build
+git clone https://github.com/edde746/speedtest.git
+cd speedtest
+
+pnpm install
+pnpm run build
+# or
+docker build -t speedtest .
 ```
 
-You can preview the production build with `npm run preview`.
+## Alternatives
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+- [henrywhitaker3/Speedtest-Tracker](https://github.com/henrywhitaker3/Speedtest-Tracker)
+
+  A seeminlgly unmaintained project, `latest` image is missing arm64 build and startup time is very slow (in my experience).
+
+- [alexjustesen/speedtest-tracker](https://github.com/alexjustesen/speedtest-tracker)
+
+  Feature rich but requires PostgreSQL or MySQL making it more complicated to setup.

@@ -6,7 +6,6 @@ RUN pnpm i --frozen-lockfile
 COPY prisma/ ./prisma/
 RUN pnpx prisma generate
 COPY . .
-RUN pnpx prisma db push
 RUN pnpm run build
 
 FROM node:21-alpine as production
@@ -22,6 +21,5 @@ RUN pnpm i --prod --frozen-lockfile
 COPY prisma/ ./prisma/
 RUN pnpx prisma generate
 COPY --from=build /app/build/ ./build
-COPY --from=build /app/data ./data
 EXPOSE 3000
-CMD ["node", "./build/index.js"]
+CMD ["pnpm","start"]
