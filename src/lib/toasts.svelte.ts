@@ -17,6 +17,11 @@ export const alertClass = (type: Toast["type"]) => {
   }
 };
 
+const randomID = () =>
+  Array.from({ length: 16 }, () =>
+    Math.floor(Math.random() * 16).toString(16)
+  ).join("");
+
 class Toasts {
   #toasts = $state<Toast[]>([]);
 
@@ -25,7 +30,7 @@ class Toasts {
   }
 
   add(toast: Pick<Toast, "type" | "text">, timeout = 4000) {
-    const id = crypto.randomUUID();
+    const id = randomID();
     this.#toasts.push({
       id,
       ...toast,
