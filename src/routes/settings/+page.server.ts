@@ -1,3 +1,4 @@
+import { createJob } from "$lib/cron";
 import { get, set } from "$lib/settings";
 import type { PageServerLoad, Actions } from "./$types";
 
@@ -12,5 +13,6 @@ export const actions: Actions = {
     const body = await request.formData();
     const cron = body.get("cron");
     if (cron) await set("cron", cron);
+    await createJob();
   },
 };
