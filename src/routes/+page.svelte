@@ -1,12 +1,7 @@
 <script lang="ts">
-  import {
-    Download,
-    Timer,
-    Upload,
-    Server,
-    X,
-    Trash2,
-  } from "@steeze-ui/lucide-icons";
+  import Table from "./Table.svelte";
+
+  import { Download, Timer, Upload } from "@steeze-ui/lucide-icons";
   import Stat from "./Stat.svelte";
   import {
     VisAxis,
@@ -16,7 +11,6 @@
     VisTooltip,
     VisXYContainer,
   } from "@unovis/svelte";
-  import { Icon } from "@steeze-ui/svelte-icon";
   import { enhance } from "$app/forms";
   import { toasts } from "$lib/toasts.svelte";
   import { invalidateAll } from "$app/navigation";
@@ -46,15 +40,7 @@
 
   type Entry = (typeof speedtests)[0];
   const x = (d: Entry) => d.time.getTime();
-
-  let selectedServer = $state<
-    (typeof data.speedtests)[0]["server"] | undefined
-  >(undefined);
 </script>
-
-<svelte:window
-  onkeydown={(e) => e.key == "Escape" && (selectedServer = undefined)}
-/>
 
 <div class="p-4 grid grid-cols-6 gap-4">
   <Stat
@@ -110,106 +96,11 @@
     </VisXYContainer>
   </div>
 
-  <dialog class="modal" open={!!selectedServer}>
-    <div class="modal-box space-y-2">
-      {#if selectedServer}
-        <h3 class="font-bold text-lg flex gap-2 items-center">
-          <Icon src={Server} class="w-6 h-6" />
-          <span>{selectedServer.name}</span>
-        </h3>
-        <div class="grid grid-cols-2 gap-2 details">
-          <p>Country</p>
-          <p class="font-semibold">{selectedServer.country}</p>
-          <p>Location</p>
-          <p class="font-semibold">{selectedServer.location}</p>
-          <p>IP</p>
-          <p class="font-semibold">{selectedServer.ip}</p>
-        </div>
-      {/if}
-    </div>
-    <button class="modal-backdrop" onclick={() => (selectedServer = undefined)}>
-    </button>
-  </dialog>
-
-  {#if data.speedtests.length}
-    <div class="col-span-6 rounded-box bg-base-200 overflow-y-auto">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Time</th>
-            <th>Ping</th>
-            <th>Download</th>
-            <th>Upload</th>
-            <th>Server</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each speedtests as speedtest}
-            <tr>
-              <td>
-                {speedtest.time.toLocaleString(undefined, {
-                  month: "numeric",
-                  day: "numeric",
-                  year: "numeric",
-                  hour: "numeric",
-                  minute: "numeric",
-                })}
-              </td>
-              {#if speedtest.ping}
-                <td>{speedtest.ping?.toFixed(2)} ms</td>
-                <td>{speedtest.download?.toFixed(2)} mbps</td>
-                <td>{speedtest.upload?.toFixed(2)} mpbs</td>
-                <td>
-                  <button
-                    class="btn btn-primary btn-sm flex-nowrap"
-                    onclick={() => {
-                      selectedServer = speedtest.server;
-                    }}
-                  >
-                    <Icon src={Server} class="w-4 h-4" />
-                    <span>{speedtest.server?.name}</span>
-                  </button>
-                </td>
-              {:else}
-                {#each Array(4) as _}
-                  <td><Icon src={X} class="w-4 h-4 text-error" /></td>
-                {/each}
-              {/if}
-              <td>
-                <form
-                  class="flex justify-end items-center"
-                  action="?/delete"
-                  method="POST"
-                  use:enhance={() =>
-                    ({ result }) => {
-                      if (result.type == "success") {
-                        toasts.add({
-                          text: "Speedtest deleted",
-                          type: "success",
-                        });
-                        speedtests = speedtests.filter(
-                          (d) => d.id != speedtest.id
-                        );
-                      }
-                    }}
-                >
-                  <button
-                    class="btn btn-error btn-sm flex-nowrap"
-                    name="id"
-                    value={speedtest.id}
-                  >
-                    <Icon src={Trash2} class="w-4 h-4" />
-                    <span>Delete</span>
-                  </button>
-                </form>
-              </td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
-    </div>
-  {/if}
+  {#key data.speedtests[0]}
+    {#if data.speedtests.length}
+      <Table speedtests={data.speedtests}></Table>
+    {/if}
+  {/key}
 
   <div class="flex col-span-full gap-2 ml-2">
     <form
