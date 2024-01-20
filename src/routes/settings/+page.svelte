@@ -1,6 +1,8 @@
 <script>
   import { enhance } from "$app/forms";
   import { toasts } from "$lib/toasts.svelte";
+
+  const { data } = $props();
 </script>
 
 <form
@@ -24,6 +26,7 @@
       type="text"
       name="cron"
       placeholder="0 * * * *"
+      value={data.cron}
       class="input input-bordered input-sm w-full max-w-xs"
     />
   </div>

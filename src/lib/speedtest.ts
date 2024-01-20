@@ -21,6 +21,11 @@ const spawnAsync = (command: string, args: string[]): Promise<string> =>
   });
 
 export const run = async () => {
+  if (process.env.OOKLA_EULA_GDPR != "true")
+    throw new Error(
+      'You must accept Ookla\'s EULA and GDPR policy. Please set the environment variable OOKLA_EULA_GDPR to "true" to accept the terms.'
+    );
+
   const result = JSON.parse(
     await spawnAsync("speedtest", [
       "--accept-license",
