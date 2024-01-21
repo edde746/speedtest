@@ -39,9 +39,9 @@
   </button>
 </dialog>
 
-<div class="col-span-6 rounded-box bg-base-200 overflow-y-auto">
+<div class="col-span-6 rounded-box bg-base-200 overflow-y-auto max-h-96">
   <table class="table">
-    <thead>
+    <thead class="sticky top-0 bg-base-200">
       <tr>
         <th>Time</th>
         <th>Ping</th>
