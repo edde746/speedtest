@@ -41,3 +41,7 @@ docker build -t speedtest .
 - [alexjustesen/speedtest-tracker](https://github.com/alexjustesen/speedtest-tracker)
 
   Feature rich but requires PostgreSQL or MySQL making it more complicated to setup.
+
+## Screenshot
+
+<img width="1334" alt="Screenshot 2024-01-21 at 03 43 46" src="https://github.com/edde746/speedtest/assets/86283021/d043265b-1cc4-449b-b8c8-5acad230e27e">
